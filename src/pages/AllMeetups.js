@@ -1,4 +1,4 @@
-
+import {useState} from 'react'
 import MeetupList from '../components/meetups/meetupList';
 const DUMMY_DATA = [
     {
@@ -20,10 +20,37 @@ const DUMMY_DATA = [
             'This is a first, amazing meetup which you definitely should not miss. It will be a lot of fun!',
     },
 ];
-function AllMeetups() {
+ function AllMeetups() {
+     const [isLoading, setIsLoading] = useState(true);
+     const [loadedMeetups, setLoadedMeetups] = useState([]);
+
+     fetch('https://react-getting-start-700ea-default-rtdb.firebaseio.com/meetups.json'
+    ).then(response =>{
+        return response.json()
+    })
+    .then(data =>{
+
+        const meetups = [];
+        for(const key in data){
+            const meetup = {
+                id: key,
+                ...data[key]
+            };
+            meetups.push(meetup)
+        }
+        setIsLoading(false)
+    });
+    if(isLoading){
+        return(
+            <section>
+                <p>Loading...</p>
+            </section>
+        );
+    }
+
     return <section>
         <h1>All Meetups</h1>
-        <MeetupList meetups={DUMMY_DATA}/>
+        <MeetupList meetups={loadedMeetups}/>
         </section>
 }
 

@@ -1,24 +1,47 @@
-import Card from '../ui/Cards'
-import classes from './meetupItem.module.css';
-function MeetupItems(props) {
-    return <li className={classes.item}>
-        <Card>
+import { useContext } from 'react';
+import Card from '../ui/Card'
+import classes from './meetupItem.module.css'
+// import classes from '../meetups/MeetupItem.module.css';
+import FavoritesContext from '../store/favorties-context';
+
+function MeetupItem(props) {
+  const favoritesCtx = useContext(FavoritesContext);
+
+  const itemIsFavorite = favoritesCtx.itemIsFavorite(props.id);
+
+  function toggleFavoriteStatusHandler() {
+    if (itemIsFavorite) {
+      favoritesCtx.removeFavorite(props.id);
+    } else {
+      favoritesCtx.addFavorite({
+        id: props.id,
+        title: props.title,
+        description: props.description,
+        image: props.image,
+        address: props.address,
+      });
+    }
+  }
+
+  return (
+    <li className={classes.item}>
+      <Card>
         <div className={classes.image}>
-            <img src={props.image} alt={props.title} />
+          <img src={props.image} alt={props.title} />
         </div>
         <div className={classes.content}>
-            <h3>{props.title}</h3>
-            <address>{props.address}</address>
-
-            <p>{props.description}</p>
-
+          <h3>{props.title}</h3>
+          <address>{props.address}</address>
+          <p>{props.description}</p>
         </div>
-        
-        <div>
-            <button className={classes.actions}>to favorites</button>
+        <div className={classes.actions}>
+          <button onClick={toggleFavoriteStatusHandler}>
+            {itemIsFavorite ? 'Remove from Favorites' : 'To Favorites'}
+          </button>
         </div>
-        </Card>
+      </Card>
     </li>
-
+  );
 }
-export default MeetupItems;
+
+export default MeetupItem;
